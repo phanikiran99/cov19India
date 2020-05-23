@@ -91,9 +91,9 @@ app.layout = html.Div(children=[
         id='Cov2',
         figure=fig2
     ),
-    html.A('Code on Github', href='#'),
+    html.A('Code on Github', href='https://github.com/phanikiran99/cov19India'),
     html.Br(),
-    html.A('Data Source', href='#'),
+    html.A('Data Source', href='covid19india.org'),
     ]
 )
 
