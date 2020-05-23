@@ -2,6 +2,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output, State
 #plotly
 import plotly.graph_objects as go
 #data
@@ -73,14 +74,27 @@ fig2.add_trace(go.Scatter(x=doublingData['date'],y=doublingData['doubleRate'], n
 fig2.add_trace(go.Scatter(x=doublingData['date'],y=doublingData['totalconfirmed'].map(int).map(np.log), name='Total Cases LogScale'))
 fig2.update_layout(title='Doubling Rate of Cases in India ' + str(doublingData['doubleRate'].iloc[-1]))
 
+
+url_bar_and_content_div = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+    
+    
 ########### Initiate the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.title="Cov19India"
 
-########### Set up the layout
-app.layout = html.Div(children=[
+layout_index = html.Div([
+    dcc.Link('Navigate to "covid19India"', href='/covid19'),
+    html.Br(),
+    dcc.Link('Navigate to "/blog"', href='/blog'),
+])
+
+    
+covid_layout= html.Div(children=[
     html.H2("Total Cases TrendLine - India"),
     dcc.Graph(
         id='Cov1',
@@ -97,5 +111,44 @@ app.layout = html.Div(children=[
     ]
 )
 
+
+    
+blog_layout = html.Div([
+    html.H2('Blog'),
+    #dcc.Dropdown(
+    #    id='page-2-dropdown',
+    #    options=[{'label': i, 'value': i} for i in ['LA', 'NYC', 'MTL']],
+    #    value='LA'
+    #),
+    #html.Div(id='page-2-display-value'),
+    #html.Br(),
+    dcc.Link('Navigate to "/"', href='/'),
+    html.Br(),
+    dcc.Link('Navigate to "/covid19india"', href='/covid19'),
+])    
+# index layout
+app.layout = url_bar_and_content_div
+
+# "complete" layout
+app.validation_layout = html.Div([
+    url_bar_and_content_div,
+    layout_index,
+    covid_layout,
+    blog_layout,
+])    
+
+# Index callbacks
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == "/covid19":
+        return covid_layout
+    elif pathname == "/blog":
+        return blog_layout
+    else:
+        return layout_index
+
+
+    
 if __name__ == '__main__':
     app.run_server()
