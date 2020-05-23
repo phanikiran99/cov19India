@@ -28,5 +28,4 @@ traitlets==4.3.2
 Werkzeug==0.15.4
 requests
 geopandas
-matplotlib
-
+PIL
