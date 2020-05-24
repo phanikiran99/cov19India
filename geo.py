@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 
 
-geoData = read_file(r'States\Admin2.shp')
+geoData = read_file(r'static/Admin2.shp')
 geoList = geoData.sort_values(by='ST_NM').ST_NM.unique()
 
 stateapi = 'https://api.covid19india.org/states_daily.json'

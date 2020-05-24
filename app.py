@@ -6,6 +6,11 @@ from dash.dependencies import Input, Output
 import plots
 import geo
 import base64
+import os
+import flask
+
+STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
 
 
 fig  = plots.fig  # trend line
@@ -94,6 +99,9 @@ def display_page(pathname):
         return layout_index
 
 
+@app.server.route('/static/<resource>')
+def serve_static(resource):
+    return flask.send_from_directory(STATIC_PATH, resource)
     
 if __name__ == '__main__':
     app.run_server()
