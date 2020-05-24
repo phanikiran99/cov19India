@@ -16,17 +16,18 @@ STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 fig  = plots.fig  # trend line
 fig2 = plots.fig2 # doubling rate
 
+geo.saveImages();
+
 url_bar_and_content_div = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
 
-rec_filename = 'recovery.png' # replace with your own image
-
+rec_filename = 'static/recovery.png' # replace with your own image
 encoded_image_rec = base64.b64encode(open(rec_filename, 'rb').read())
 
 
-act_filename = 'active.png' # replace with your own image
+act_filename = 'static/active.png' # replace with your own image
 encoded_image_act = base64.b64encode(open(act_filename, 'rb').read())    
     
 ########### Initiate the app
