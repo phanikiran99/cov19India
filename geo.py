@@ -53,19 +53,22 @@ def saveImages():
     geoFullData = geoFullData.dropna(subset=['geometry'])
     geoFullData['coords'] = geoFullData['geometry'].apply(lambda x: x.representative_point().coords[:])
     geoFullData['coords'] = [coords[0] for coords in geoFullData['coords']]
-    fig = plt.figure()
-    geoFullData.plot(figsize=(18,10), column='Active%', legend=True,cmap='RdYlGn_r');
+    #fig = plt.figure()
+    
+    
+    #fig, (ax1, ax2) = plt.subplots(ncols=2, sharex=True, sharey=True)
+    geoFullData.plot( figsize=(12,7), column='Active%', legend=True,cmap='RdYlGn_r');
     for idx, row in geoFullData.iterrows():
         plt.annotate(s=row['Active%'],xy=row['coords'], horizontalalignment='center')
      
-    plt.title('Active Cases Per 100 People Infected');
+    plt.title('Active Cases Per 100 People Infected -'+str(dt.datetime.now()));
     plt.savefig('static/active.png')
     
-    geoFullData.plot(figsize=(18,10), column='Recover%', legend=True,cmap='RdYlGn');
+    geoFullData.plot(figsize=(12,7), column='Recover%', legend=True,cmap='RdYlGn');
     for idx, row in geoFullData.iterrows():
         plt.annotate(s=row['Recover%'],xy=row['coords'], horizontalalignment='center')
      
-    plt.title('Recoveries Per 100 People Infected- '+str(dt.datetime.now().time()));
+    plt.title('Recoveries Per 100 People Infected- '+str(dt.datetime.now()));
     plt.savefig('static/recovery.png')
     
 if __name__ == '__main__':
