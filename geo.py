@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime as dt
 from plotly.tools import mpl_to_plotly
+
 def saveImages():
     print ('savingImages')
     geoData = read_file(r'static/Admin2.shp')

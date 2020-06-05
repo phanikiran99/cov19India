@@ -3,12 +3,13 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import plots
+#import plots
 import geo
-import base64
+#import base64
 import os
 import flask
 import pathlib
+import helper
 
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
@@ -17,8 +18,6 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath("data").resolve()
 
 
-fig  = plots.fig  # trend line
-fig2 = plots.fig2 # doubling rate
 
 geo.saveImages();
 
@@ -27,12 +26,6 @@ url_bar_and_content_div = html.Div([
     html.Div(id='page-content')
 ])
 
-rec_filename = 'static/recovery.png' # replace with your own image
-encoded_image_rec = base64.b64encode(open(rec_filename, 'rb').read())
-
-
-act_filename = 'static/active.png' # replace with your own image
-encoded_image_act = base64.b64encode(open(act_filename, 'rb').read())    
     
 ########### Initiate the app
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -137,41 +130,8 @@ layout_index = html.Div([
                     
 ])
 
-    
-covid_layout= html.Div(children=[
-    html.Div([
-    html.H2("Total Cases TrendLine - India"),
-    dcc.Graph(
-        id='Cov1',
-        figure=fig
-    ),
-       ],
-        className="pretty_container"),
-    html.Div([
-    html.H2("Doubling Rate of Cases"),
-    dcc.Graph(
-        id='Cov2',
-        figure=fig2
-    ),
-            ],
-            className='pretty_container'),
-    html.Div([
-    html.Div([
-    html.Img(src='data:image/png;base64,{}'.format(encoded_image_act.decode())),
-    ],
-    className='pretty_container'),
-    html.Div([
-            html.Img(src='data:image/png;base64,{}'.format(encoded_image_rec.decode())),
-            ],
-            className='pretty_container'),
-            ],
-    className='row container-display'),
-    html.A('Code on Github', href='https://github.com/phanikiran99/cov19India'),
-    html.Br(),
-    html.A('Data Source', href='covid19india.org'),
-    ]
-)
-
+ 
+covid_layout = helper.covid_layout
 
     
 blog_layout = html.Div([
