@@ -17,6 +17,7 @@ stateapi = 'https://api.covid19india.org/states_daily.json'
 stateData = requests.get(stateapi).json()
 stateDf = pd.DataFrame(stateData['states_daily'])
 confirmed_trend = stateDf[stateDf['status'] == 'Confirmed']
+recovered_trend = stateDf[stateDf['status'] == 'Recovered']
 
 
 state_ut = list(set(confirmed_trend.columns) - set(['status','tt','date']))
@@ -85,7 +86,10 @@ fig2.update_layout(title='Doubling Rate of Cases in India ' + str(doublingData['
 fig3 = go.Figure()
 for col in confirmed_trend.columns:
   if col in state_ut:
-    fig3.add_trace(go.Scatter(x=confirmed_trend['date'], y= confirmed_trend[col].map(int), name=col))
+    fig3.add_trace(go.Scatter(x=confirmed_trend['date'], 
+                              y= confirmed_trend[col].map(int).cumsum().values -recovered_trend[col].map(int,abs).cumsum().values,
+                              name=col, mode='lines+markers',
+                              marker={'size':confirmed_trend[col].map(int,abs).apply(lambda x: 0 if x <0 else x/100).values}))
   else:
     pass
-fig3.update_layout(title='State Wise daily confirm trend')
+fig3.update_layout(title='State Wise Active Cases trend')
