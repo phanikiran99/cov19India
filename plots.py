@@ -38,7 +38,7 @@ fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailyconfirmed'
 fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailydeceased'], name='Daily Deceased'))
 fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailyrecovered'], name='Daily Recovered'))
 
-fig.update_layout(barmode='stack')
+fig.update_layout(barmode='stack',hovermode='x',showlegend=False)
 
 #Doubling Rate
 pctChange = pd.DataFrame({'date':caseTimeSeries['date'],'totalconfirmed':caseTimeSeries['totalconfirmed'],'pct_change':caseTimeSeries['totalconfirmed'].map(int).pct_change().mul(100).round(2)})
@@ -80,7 +80,7 @@ fig2 = go.Figure()
 fig2.add_trace(go.Bar(x=doublingData['date'],y=doublingData['doubleRate'], name='DoublingRate of Cases'))
 fig2.add_trace(go.Scatter(x=doublingData['date'],y=doublingData['doubleRate'], name='DoublingRate of Cases'))
 fig2.add_trace(go.Scatter(x=doublingData['date'],y=doublingData['totalconfirmed'].map(int).map(np.log), name='Total Cases LogScale'))
-fig2.update_layout(title='Doubling Rate of Cases in India ' + str(doublingData['doubleRate'].iloc[-1]))
+fig2.update_layout(hovermode='x',title='Doubling Rate of Cases in India ' + str(doublingData['doubleRate'].iloc[-1]))
 
 
 fig3 = go.Figure()
@@ -89,7 +89,8 @@ for col in confirmed_trend.columns:
     fig3.add_trace(go.Scatter(x=confirmed_trend['date'], 
                               y= confirmed_trend[col].map(int).cumsum().values -recovered_trend[col].map(int,abs).cumsum().values,
                               name=col, mode='lines+markers',
-                              marker={'size':confirmed_trend[col].map(int,abs).apply(lambda x: 0 if x <0 else x/100).values}))
+                              #marker={'size':confirmed_trend[col].map(int,abs).apply(lambda x: 0 if x <0 else x/100).values}
+                              ))
   else:
     pass
-fig3.update_layout(title='State Wise Active Cases trend')
+fig3.update_layout(title='State Wise Active Cases trend',hovermode='x',showlegend=False)

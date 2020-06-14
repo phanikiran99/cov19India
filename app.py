@@ -11,6 +11,15 @@ import flask
 import pathlib
 import helper
 
+#import sqlite3
+
+cat = []  #categories
+titles= [] #titles
+for arti in helper.retriveArticlesList():
+    print(arti[0],arti[3])
+    cat.append({'label':arti[0],'value':arti[0]})
+    titles.append({'label':arti[3],'value':arti[3]})
+print(cat,titles)
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
 # get relative data folder
@@ -75,7 +84,7 @@ layout_index = html.Div([
                     [
                         html.A(
                             html.Button("Learn More", id="learn-more-button"),
-                            href="https://plot.ly/dash/pricing/",
+                            href="#",
                         )
                     ],
                     className="one-third column",
@@ -89,6 +98,10 @@ layout_index = html.Div([
     
     html.Div(
             [
+            html.Div([
+                    html.Div([html.P("Category"),dcc.Dropdown(options=cat,multi=True),]),
+                      html.Div([html.P("Title"),dcc.Dropdown(options=titles,multi=True),]),
+                      ],className='pretty-container col-md-3'),
             html.Div(
                     [
                     html.H6("Covid19"),
