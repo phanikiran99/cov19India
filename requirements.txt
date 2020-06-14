@@ -30,4 +30,3 @@ requests
 geopandas
 matplotlib
 descartes
-sqlite
