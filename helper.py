@@ -67,6 +67,7 @@ dict = {'an': 'Andaman & Nicobar Island',
 fig  = plots.fig  # trend line
 fig2 = plots.fig2 # doubling rate
 fig3 = plots.fig3
+fig4 = plots.fig4
 
 rec_filename = 'static/recovery.png' # replace with your own image
 encoded_image_rec = base64.b64encode(open(rec_filename, 'rb').read())
@@ -77,8 +78,55 @@ encoded_image_act = base64.b64encode(open(act_filename, 'rb').read())
 
 states_options = [{'label':i[1],'value':i[0]} for i in dict.items()]
 
+def commonLayout(layoutTitle='Title',numFilters=2,filter1Name='Filter1',
+                 filter2Name='Filter2',
+                 filter1Options=[{}], filter2Options=[{}], figList=[]):
+    """
+    Parameters : layoutTitle = Title of the page
+    numfilters = Total number of filters - supports two filters
+    filter'n'Name = name of filters
+    filter'n'Options = options for dropdown values
+    figlist - list of lists with id, fig object, Text description of figure
+    """
+    # prepare for filter area
+    filterArea  =  html.Div([html.H5(filter1Name,className='col-md-2'),
+                  html.Div([dcc.Dropdown(options=filter1Options,multi=True,value='ap')]
+                ,className='col-md-4'),
+                html.H5(filter2Name,className='col-md-2'),
+                  html.Div([dcc.Dropdown(options=filter2Options,multi=True,value='ap')]
+                ,className='col-md-4'),]
+            ,className='row container-display pretty_container')       
+    # prepare for plots
+    figureArea = []
+    for i,fig in enumerate(figList):
+        if i%2 == 0:
+            figureArea.append(html.Div([html.Div([dcc.Graph(id=fig[0], figure=fig[1])], className='pretty_container col-md-10'),
+                                        html.Div([html.P(fig[2])], className='pretty_container col-md-2 text-left')], 
+                                        className='row container-display'))
+        else:
+            figureArea.append(html.Div([html.Div([html.P(fig[2])], className='pretty_container col-md-2 text-right'),
+                                        html.Div([dcc.Graph(id=fig[0], figure=fig[1])], className='pretty_container col-md-10'),
+                                        ], 
+                                        className='row container-display'))
+            
+    updatedLayout = html.Div(children=[
+        html.Div(html.H4(layoutTitle),className='row pretty_container col-md-12 container-fluid center'),
+        filterArea,
+        html.Div(figureArea),]
+        )
+    
+    return updatedLayout
+
+
+
+common_layout = commonLayout(layoutTitle='Covid19 India EDA Short analysis on How India is dealing with Covid19',numFilters=2,filter1Name='State',
+                 filter2Name='Filter2',
+                 filter1Options=states_options,
+                 filter2Options=[{'label':'1','value':'1'},{'label':'2','value':'2'}], 
+                 figList=[['test',fig,plots.figText],['test2',fig4,plots.fig4Text]])
+
 covid_layout= html.Div(children=[
-        html.Div('Covid19 India EDA Short analysis on How India is dealing with Covid19',className='row container-display pretty_container col-md-12 container-fluid'),
+        html.Div('Covid19 India EDA Short analysis on How India is dealing with Covid19',className='row pretty_container col-md-12 container-fluid'),
         html.Div([html.H3('State',className='pretty_container col-md-4'),
                   html.Div([dcc.Dropdown(options=states_options,multi=True,value='ap')]
                 ,className='pretty_container col-md-8'),]

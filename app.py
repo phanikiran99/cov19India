@@ -122,13 +122,13 @@ layout_index = html.Div([
                     ),
             html.Div(
                     [
-                    html.H6("Blog"),
-                    html.P("Blog Entries"),
+                    html.H6("Covid19 New"),
+                    html.P("Covid 19 India Statewise trends and more"),
                     html.Div(
                     [
                         html.A(
                             html.Button("Go", id="learn-more-button"),
-                            href="/blog",
+                            href="/common",
                         )
                     ],
                     className="one-half column",
@@ -145,7 +145,7 @@ layout_index = html.Div([
 
  
 covid_layout = helper.covid_layout
-
+common_layout = helper.common_layout
     
 blog_layout = html.Div([
     html.H2('Blog'),
@@ -179,6 +179,8 @@ def display_page(pathname):
         return covid_layout
     elif pathname == "/blog":
         return blog_layout
+    elif pathname == "/common":
+        return common_layout
     else:
         return layout_index
 

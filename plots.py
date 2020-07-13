@@ -7,6 +7,9 @@ import numpy as np
 #api
 import requests
 
+from dateutil import parser
+import dash_html_components as html
+
 #import math
 
 # get the data
@@ -27,18 +30,66 @@ caseTimeSeries = pd.DataFrame(resp.json()['cases_time_series'])  # timeseries da
 stateWise = pd.DataFrame(resp.json()['statewise']) # statewise
 tested = pd.DataFrame(resp.json()['tested']) # test statistics
 
+
+
+eventTimeline ={'What':['First Case - 30th January <br>','LockDown 1.0 From 25th March <br>Cases were than 100 per day','LockDown 2.0 Extended<br> 1000 cases/day ',
+                        'LockDown 3.0 extended<br> 2.5k Cases/day','LockDown 4.0 extended<br> 5K/day ',
+                        'Unlock 1.0 on June 1st <br> <b>7k Cases/Day','Unlock 2.0 Started on July 1st <br> 15k/Day<br><b>Effect of Unlock 1.0?'],
+'When':['30 January','25 March','14 April','01 May','17 May','01 June','01 July']}
+
+delta = []
+for value in eventTimeline['When']:
+  delta.append((parser.parse(value) - parser.parse('30 January')).days)
+eventTimeline['delta'] = delta
+
+
 #total statistics, Daily Cases trends 
 fig = go.Figure()
 
-fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalconfirmed'], name='Total Confirmed'))
-fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalrecovered'], name='Total Recovered'))
-fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalconfirmed'].map(int)-caseTimeSeries['totalrecovered'].map(int), name='Total Active'))
-fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totaldeceased'], name='Total Deceased'))
+fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalconfirmed'], name='Total Confirmed',marker_color='Grey'))
+fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalrecovered'], name='Total Recovered',marker_color='Grey'))
+fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totalconfirmed'].map(int)-(caseTimeSeries['totalrecovered'].map(int)+ caseTimeSeries['totaldeceased'].map(int))
+                                          , name='Total Active',marker_color='Crimson',mode='lines+text'))
+fig.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['totaldeceased'], name='Total Deceased',marker_color='Grey'))
 fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailyconfirmed'], name='Daily Confirmed'))
-fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailydeceased'], name='Daily Deceased'))
-fig.add_trace(go.Bar(x=caseTimeSeries['date'], y=caseTimeSeries['dailyrecovered'], name='Daily Recovered'))
 
-fig.update_layout(barmode='stack',hovermode='x',showlegend=False)
+
+fig.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=caseTimeSeries['totalconfirmed'].map(int).max(),
+                   text='Confirmed')
+
+fig.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=caseTimeSeries['totalrecovered'].map(int).max(),
+                   text='Recovered')
+
+fig.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=caseTimeSeries['totaldeceased'].map(int).max(),
+                   text='Deceased')
+
+fig.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=(caseTimeSeries['totalconfirmed'].map(int)-(caseTimeSeries['totalrecovered'].map(int)+ caseTimeSeries['totaldeceased'].map(int))).iloc[-1],
+                   text='Active',font={'color':'Crimson'})
+
+fig.update_annotations(dict(
+            xref="x",
+            yref="y",
+            showarrow=True,
+            arrowhead=7,
+            ax=0,
+            ay=-20
+))
+fig.update_layout(barmode='stack',xaxis_showgrid=False, yaxis_showgrid=False, plot_bgcolor='#FFF',showlegend=False,hovermode='x')
+fig.update_layout(title='Covid19 Timeline in India', height=400)
+
+figText = html.Div(['People Infected as on ', html.B(str(caseTimeSeries['date'].iloc[-1])) , 
+                    html.H3(' = ' + str(caseTimeSeries['totalconfirmed'].map(int).max()), style={'color': 'LightBlue'}),
+                    
+                    html.P(['Out of which ', html.H4(str((caseTimeSeries['totalconfirmed'].map(int)-(caseTimeSeries['totalrecovered'].map(int)+ caseTimeSeries['totaldeceased'].map(int))).iloc[-1]), style={'color': 'Crimson'})])
+                    , ' Are still Infected & ' ,html.H4(str(caseTimeSeries['totalrecovered'].map(int).iloc[-1]), style={'color': 'green'}), ' have been cured and Discharged',
+                    html.P(['Morality Rate ', html.H5(str((round(caseTimeSeries['totaldeceased'].map(int).iloc[-1]*100/caseTimeSeries['totalconfirmed'].map(int).iloc[-1],2))))]),
+                    ],
+                    
+                )
 
 #Doubling Rate
 pctChange = pd.DataFrame({'date':caseTimeSeries['date'],'totalconfirmed':caseTimeSeries['totalconfirmed'],'pct_change':caseTimeSeries['totalconfirmed'].map(int).pct_change().mul(100).round(2)})
@@ -94,3 +145,66 @@ for col in confirmed_trend.columns:
   else:
     pass
 fig3.update_layout(title='State Wise Active Cases trend',hovermode='x',showlegend=False)
+
+
+fig4 = go.Figure()
+fig4.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['dailyconfirmed'], name='Confirmed',marker_color='DarkOrange'))
+fig4.add_trace(go.Scatter(x=caseTimeSeries['date'], y=caseTimeSeries['dailyrecovered'], name='Recovered',marker_color='DarkBlue'))
+
+  
+fig4.add_annotation(x=eventTimeline['delta'][0]+15,
+                     y=3000,
+                     text=eventTimeline['What'][0])
+
+
+fig4.add_annotation(x=eventTimeline['delta'][1],
+                     y=3000,
+                     text=eventTimeline['What'][1])
+
+fig4.add_annotation(x=eventTimeline['delta'][2],
+                     y=5000,
+                     text=eventTimeline['What'][2])
+
+
+fig4.add_annotation(x=eventTimeline['delta'][3],
+                     y=8000,
+                     text=eventTimeline['What'][3])
+
+fig4.add_annotation(x=eventTimeline['delta'][4],
+                     y=11000,
+                     text=eventTimeline['What'][4])
+
+
+fig4.add_annotation(x=eventTimeline['delta'][5],
+                     y=15000,
+                     text=eventTimeline['What'][5])
+
+fig4.add_annotation(x=eventTimeline['delta'][6]-15,
+                     y=20000,
+                     text=eventTimeline['What'][6])
+
+fig4.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=caseTimeSeries['dailyconfirmed'].map(int).max(),
+                   text='Daily Confirmed', font={'color':'Crimson'})
+
+fig4.add_annotation(x=caseTimeSeries['date'].iloc[-1],
+                   y=caseTimeSeries['dailyrecovered'].map(int).max(),
+                   text='DailyRecovered',font={'color':'LightGreen'})
+
+
+fig4.update_annotations(dict(
+            xref="x",
+            yref="y",
+            showarrow=True,
+            arrowhead=8,
+            ax=0,
+            ay=-2
+))
+fig4.update_layout(barmode='stack',xaxis_showgrid=False, yaxis_showgrid=False, plot_bgcolor='#FFF',showlegend=False,hovermode='x')
+fig4.update_layout(title='Covid19 Daily Timeline - India',height=400,font=dict(
+        family="Helvetica",
+        size=12,
+        color="Black"
+    ))
+
+fig4Text = "We can say the cases were coming down and We are progressing towards recovery only when the recoveries/day were continuosly are greater than confirmed cases/day"
