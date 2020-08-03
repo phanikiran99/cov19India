@@ -162,6 +162,6 @@ covid_layout= html.Div(children=[
 )
 
 
-covtab_layout = html.Div(html.Iframe(src="https://public.tableau.com/views/Covid19InIndia/Indiatotal?:language=en-GB&:display_count=y&publish=yes&:origin=viz_share_link:showVizHome=no&:embed=true showVizHome=no&:embed=true"
+covtab_layout = html.Div(html.Iframe(src="https://public.tableau.com/views/Covid19InIndia/Covid19WhatsFuture?:language=en-GB&:display_count=y&publish=yes&:origin=viz_share_link:showVizHome=no&:embed=true showVizHome=no&:embed=true"
                                      ,width='100%', height="655"
                                      ),className='pretty_container col-md-12 container-fluid')
