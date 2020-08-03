@@ -137,7 +137,23 @@ layout_index = html.Div([
                     ],
                     className="mini_container",
                     ),
-                    
+            html.Div(
+                    [
+                    html.H6("Covid19 Tableau"),
+                    html.P("Tableau Analysis of Covid19 In India"),
+                    html.Div(
+                    [
+                        html.A(
+                            html.Button("Go", id="learn-more-button"),
+                            href="/covtab",
+                        )
+                    ],
+                    className="one-half column",
+                    id="button",
+                ),
+                    ],
+                    className="mini_container",
+                    ),
             ],
                     className="row container-display",)
                     
@@ -146,6 +162,7 @@ layout_index = html.Div([
  
 covid_layout = helper.covid_layout
 common_layout = helper.common_layout
+covtab_layout = helper.covtab_layout
     
 blog_layout = html.Div([
     html.H2('Blog'),
@@ -181,6 +198,8 @@ def display_page(pathname):
         return blog_layout
     elif pathname == "/common":
         return common_layout
+    elif pathname == "/covtab":
+        return covtab_layout
     else:
         return layout_index
 
